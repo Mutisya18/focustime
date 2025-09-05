@@ -5,7 +5,6 @@ import Timer from './Timer';
 
 const TabContent = ({ 
   activeTab,
-  // Timer props
   timeLeft,
   isActive,
   currentSession,
@@ -13,29 +12,22 @@ const TabContent = ({
   onStartPause,
   onReset,
   onSkip,
-  // Notes props
   notes,
   onNotesChange,
   quickNote,
   onQuickNoteChange,
   onAddQuickNote,
-  // Reminders props
   reminders,
   onAddReminder,
   onToggleReminder,
   onDeleteReminder,
-  // Analytics props
   analytics,
-  // Theme
   darkMode 
 }) => {
   const theme = getThemeClasses(darkMode);
-  
-  // Reminder form state
   const [newReminderText, setNewReminderText] = useState('');
   const [newReminderDate, setNewReminderDate] = useState('');
   const [newReminderTime, setNewReminderTime] = useState('');
-
   const handleAddReminder = () => {
     if (!newReminderText.trim()) return;
     
