@@ -11,7 +11,6 @@ const Timer = ({
   onSkip,
   darkMode 
 }) => {
-  // Format time display
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
