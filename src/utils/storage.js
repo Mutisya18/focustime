@@ -1,4 +1,3 @@
-// Storage utility functions for data persistence
 const STORAGE_KEYS = {
   SESSIONS: 'pomodoro_sessions',
   REMINDERS: 'pomodoro_reminders',
@@ -8,7 +7,6 @@ const STORAGE_KEYS = {
   CURRENT_SESSION: 'pomodoro_current_session'
 };
 
-// Generic storage functions
 const getFromStorage = (key, defaultValue = null) => {
   try {
     const item = localStorage.getItem(key);
@@ -39,25 +37,15 @@ const removeFromStorage = (key) => {
   }
 };
 
-// Specific storage functions for different data types
 export const storageAPI = {
-  // Sessions
   getSessions: () => getFromStorage(STORAGE_KEYS.SESSIONS, []),
   saveSessions: (sessions) => saveToStorage(STORAGE_KEYS.SESSIONS, sessions),
-
-  // Current session
   getCurrentSession: () => getFromStorage(STORAGE_KEYS.CURRENT_SESSION, 'work'),
   saveCurrentSession: (sessionId) => saveToStorage(STORAGE_KEYS.CURRENT_SESSION, sessionId),
-
-  // Reminders
   getReminders: () => getFromStorage(STORAGE_KEYS.REMINDERS, []),
   saveReminders: (reminders) => saveToStorage(STORAGE_KEYS.REMINDERS, reminders),
-
-  // Notes
   getNotes: () => getFromStorage(STORAGE_KEYS.NOTES, ''),
   saveNotes: (notes) => saveToStorage(STORAGE_KEYS.NOTES, notes),
-
-  // Analytics
   getAnalytics: () => getFromStorage(STORAGE_KEYS.ANALYTICS, {
     totalSessions: 0,
     totalFocusTime: 0,
@@ -67,7 +55,6 @@ export const storageAPI = {
   }),
   saveAnalytics: (analytics) => saveToStorage(STORAGE_KEYS.ANALYTICS, analytics),
 
-  // Settings
   getSettings: () => getFromStorage(STORAGE_KEYS.SETTINGS, {
     darkMode: false,
     soundEnabled: true,
@@ -77,14 +64,12 @@ export const storageAPI = {
   }),
   saveSettings: (settings) => saveToStorage(STORAGE_KEYS.SETTINGS, settings),
 
-  // Clear all data
   clearAllData: () => {
     Object.values(STORAGE_KEYS).forEach(key => {
       removeFromStorage(key);
     });
   },
 
-  // Export all data
   exportData: () => {
     const data = {};
     Object.entries(STORAGE_KEYS).forEach(([name, key]) => {
@@ -93,7 +78,6 @@ export const storageAPI = {
     return data;
   },
 
-  // Import data
   importData: (data) => {
     try {
       Object.entries(data).forEach(([name, value]) => {
