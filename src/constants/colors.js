@@ -1,4 +1,3 @@
-// Clean, simple design system colors
 export const colors = {
   primary: '#2563eb', // Blue
   success: '#059669', // Green  
@@ -18,7 +17,6 @@ export const colors = {
   }
 };
 
-// Theme helper functions
 export const getThemeClasses = (darkMode) => ({
   bg: darkMode ? 'bg-gray-900' : 'bg-gray-50',
   text: darkMode ? 'text-white' : 'text-gray-900',
