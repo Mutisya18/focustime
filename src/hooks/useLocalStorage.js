@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// Custom hook for managing localStorage with React state
 export const useLocalStorage = (key, initialValue) => {
-  // Get value from localStorage or use initial value
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const item = window.localStorage.getItem(key);
@@ -13,23 +11,18 @@ export const useLocalStorage = (key, initialValue) => {
     }
   });
 
-  // Return a wrapped version of useState's setter function that persists the new value to localStorage
   const setValue = useCallback((value) => {
     try {
-      // Allow value to be a function so we have the same API as useState
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       
-      // Save state
       setStoredValue(valueToStore);
       
-      // Save to localStorage
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
       console.error(`Error setting localStorage key "${key}":`, error);
     }
   }, [key, storedValue]);
 
-  // Remove from localStorage
   const removeValue = useCallback(() => {
     try {
       window.localStorage.removeItem(key);
@@ -42,7 +35,6 @@ export const useLocalStorage = (key, initialValue) => {
   return [storedValue, setValue, removeValue];
 };
 
-// Hook for managing multiple localStorage values with automatic persistence
 export const usePersistentState = (storageKey, initialState) => {
   const [state, setState] = useState(() => {
     try {
@@ -54,7 +46,6 @@ export const usePersistentState = (storageKey, initialState) => {
     }
   });
 
-  // Auto-save to localStorage whenever state changes
   useEffect(() => {
     try {
       localStorage.setItem(storageKey, JSON.stringify(state));
@@ -63,7 +54,6 @@ export const usePersistentState = (storageKey, initialState) => {
     }
   }, [storageKey, state]);
 
-  // Merge updates with existing state
   const updateState = useCallback((updates) => {
     setState(prevState => ({
       ...prevState,
@@ -71,7 +61,6 @@ export const usePersistentState = (storageKey, initialState) => {
     }));
   }, []);
 
-  // Reset to initial state
   const resetState = useCallback(() => {
     setState(initialState);
     try {
@@ -84,7 +73,6 @@ export const usePersistentState = (storageKey, initialState) => {
   return [state, updateState, resetState];
 };
 
-// Hook for managing analytics with date-based reset
 export const useAnalytics = () => {
   const today = new Date().toDateString();
   
@@ -96,7 +84,6 @@ export const useAnalytics = () => {
     lastSessionDate: today
   });
 
-  // Reset today's stats if it's a new day
   useEffect(() => {
     if (analytics.lastSessionDate !== today) {
       setAnalytics(prev => ({
