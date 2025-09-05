@@ -1,19 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Clock, StickyNote, Bell, Settings, Moon, Sun } from 'lucide-react';
-
-// Components
 import Timer from './components/Timer';
 import SessionManager from './components/SessionManager';
 import TabContent from './components/TabContent';
-
-// Hooks
 import { useLocalStorage, useAnalytics } from './hooks/useLocalStorage';
-
-// Utils & Constants
 import { colors, getThemeClasses } from './constants/colors';
 
 const PomodoroApp = () => {
-  // Persistent state using localStorage
   const [sessions, setSessions] = useLocalStorage('pomodoro_sessions', [
     { id: 'work', name: 'Work', duration: 25 * 60, color: colors.primary, isDefault: false },
     { id: 'shortBreak', name: 'Short Break', duration: 5 * 60, color: colors.success, isDefault: false },
@@ -29,28 +22,19 @@ const PomodoroApp = () => {
     notificationsEnabled: true
   });
 
-  // Analytics with automatic persistence
   const [analytics, addSession] = useAnalytics();
-
-  // Timer state (not persisted - resets on refresh)
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
-  
-  // App state
-  const [activeTab, setActiveTab] = useState('timer');
+    const [activeTab, setActiveTab] = useState('timer');
   const [quickNote, setQuickNote] = useState('');
-
-  // Get current session
   const currentSession = sessions.find(s => s.id === currentSessionId) || sessions[0];
 
-  // Sync timeLeft with current session duration when session changes
   useEffect(() => {
     if (currentSession && !isActive) {
       setTimeLeft(currentSession.duration);
     }
   }, [currentSession, isActive]);
 
-  // Timer logic
   useEffect(() => {
     let interval = null;
     if (isActive && timeLeft > 0) {
@@ -58,11 +42,9 @@ const PomodoroApp = () => {
         setTimeLeft(timeLeft => timeLeft - 1);
       }, 1000);
     } else if (timeLeft === 0 && isActive) {
-      // Session completed
       setIsActive(false);
       addSession(currentSession.duration);
       
-      // Show notification
       if ('Notification' in window && Notification.permission === 'granted' && settings.notificationsEnabled) {
         new Notification('Session Complete!', {
           body: `${currentSession.name} session finished`,
@@ -70,20 +52,17 @@ const PomodoroApp = () => {
         });
       }
 
-      // Reset timer for next session
       setTimeLeft(currentSession.duration);
     }
     return () => clearInterval(interval);
   }, [isActive, timeLeft, currentSession, addSession, settings.notificationsEnabled]);
 
-  // Request notification permission on mount
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
   }, []);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -99,7 +78,6 @@ const PomodoroApp = () => {
       if (e.ctrlKey || e.metaKey) {
         if (e.code === 'KeyN') {
           e.preventDefault();
-          // Focus on session manager (could trigger new session form)
         }
         if (e.code === 'KeyD') {
           e.preventDefault();
@@ -111,10 +89,8 @@ const PomodoroApp = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [isActive, currentSession, setSettings]);
 
-  // Calculate progress percentage
   const progress = ((currentSession.duration - timeLeft) / currentSession.duration) * 100;
 
-  // Timer controls
   const startPause = useCallback(() => setIsActive(!isActive), [isActive]);
   
   const reset = useCallback(() => {
@@ -127,7 +103,6 @@ const PomodoroApp = () => {
     setTimeLeft(currentSession.duration);
   }, [currentSession.duration]);
 
-  // Session management
   const switchSession = useCallback((sessionId) => {
     setCurrentSessionId(sessionId);
     const session = sessions.find(s => s.id === sessionId);
@@ -153,7 +128,6 @@ const PomodoroApp = () => {
         : session
     ));
     
-    // Update current session time if editing the active session
     if (currentSessionId === sessionId) {
       setTimeLeft(duration * 60);
       setIsActive(false);
@@ -173,7 +147,6 @@ const PomodoroApp = () => {
     }
   }, [sessions, setSessions, currentSessionId, setCurrentSessionId]);
 
-  // Notes management
   const addQuickNote = useCallback(() => {
     if (!quickNote.trim()) return;
     
@@ -183,7 +156,6 @@ const PomodoroApp = () => {
     setQuickNote('');
   }, [quickNote, currentSession.name, setNotes]);
 
-  // Reminder management
   const addReminder = useCallback((text, dueDate, dueTime) => {
     const reminder = {
       id: Date.now(),
@@ -206,7 +178,6 @@ const PomodoroApp = () => {
     setReminders(prev => prev.filter(reminder => reminder.id !== id));
   }, [setReminders]);
 
-  // Theme classes
   const theme = getThemeClasses(settings.darkMode);
 
   return (
@@ -278,7 +249,6 @@ const PomodoroApp = () => {
       <div className="max-w-6xl mx-auto p-6">
         <TabContent
           activeTab={activeTab}
-          // Timer props
           timeLeft={timeLeft}
           isActive={isActive}
           currentSession={currentSession}
@@ -286,20 +256,16 @@ const PomodoroApp = () => {
           onStartPause={startPause}
           onReset={reset}
           onSkip={skip}
-          // Notes props
           notes={notes}
           onNotesChange={setNotes}
           quickNote={quickNote}
           onQuickNoteChange={setQuickNote}
           onAddQuickNote={addQuickNote}
-          // Reminders props
           reminders={reminders}
           onAddReminder={addReminder}
           onToggleReminder={toggleReminder}
           onDeleteReminder={deleteReminder}
-          // Analytics props
           analytics={analytics}
-          // Theme
           darkMode={settings.darkMode}
         />
       </div>
